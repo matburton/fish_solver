@@ -30,7 +30,7 @@ namespace FishSolver.Core.Domain
         public HorizontalFishType LeftFishType { get; }
 
         public override bool Equals(object obj) =>
-         obj is FishPiece other ? Equals(other) : false;
+            obj is FishPiece other ? Equals(other) : false;
 
         public override int GetHashCode()
         {
