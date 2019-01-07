@@ -29,12 +29,7 @@ namespace FishSolver.Core.Domain
 
         public IEnumerable<FishPiece> PossiblePieces => _possiblePieces;
 
-        public bool RemovePiece(FishPiece piece)
-        {
-            _possiblePieces.Remove(piece);
-
-            return _possiblePieces.Count == 1;
-        }
+        public void RemovePiece(FishPiece piece) => _possiblePieces.Remove(piece);
 
         public FishPiece Single => _possiblePieces.Count == 1
                                  ? _possiblePieces.Single()

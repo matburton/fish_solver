@@ -1,5 +1,4 @@
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +6,7 @@ namespace FishSolver.Core.Domain
 {
     public sealed class FishGrid
     {
-        public FishGrid(int dimension, IEnumerable<FishPiece> pieces)
+        public FishGrid(int dimension, IReadOnlyCollection<FishPiece> pieces)
         {
             _slots = new PieceSlot[dimension, dimension];
 
@@ -29,22 +28,22 @@ namespace FishSolver.Core.Domain
             }
         }
 
-        public IEnumerable<PieceSlot> AllSlots
+        public IEnumerable<(int x, int y)> AllCoordinates
         {
             get
             {
                 for (var x = 0; x < _slots.GetLength(0); ++x)
                 for (var y = 0; y < _slots.GetLength(1); ++y)
                 {
-                    yield return _slots[x, y];
+                    yield return (x, y);
                 }
             }
         }
 
-        public IEnumerable<PieceSlot> GetCenterRelatedSlots(PieceSlot slot)
-        {
-            var (x, y) = GetCoordinates(slot);
+        public PieceSlot GetSlot((int x, int y) c) => _slots[c.x, c.y];
 
+        public IEnumerable<PieceSlot> GetCenterRelatedSlots(int x, int y)
+        {
             for (var x2 = 0; x2 < _slots.GetLength(0); ++x2)
             {
                 if (x2 != x) yield return _slots[x2, y];
@@ -57,12 +56,13 @@ namespace FishSolver.Core.Domain
 
             if (x == y)
             {
-                for (int index = 0; index < _slots.GetLength(0); ++index)
+                for (var index = 0; index < _slots.GetLength(0); ++index)
                 {
                     if (x != index) yield return _slots[index, index];
                 }
             }
 
+            // ReSharper disable once InvertIf
             if (x + y == _slots.GetLength(0))
             {
                 for (var x2 = 0; x2 < _slots.GetLength(0); ++x2)
@@ -76,10 +76,8 @@ namespace FishSolver.Core.Domain
         public (PieceSlot above,
                 PieceSlot right,
                 PieceSlot below,
-                PieceSlot left) GetSurrounding(PieceSlot slot)
+                PieceSlot left) GetSurrounding(int x, int y)
         {
-            var (x, y) = GetCoordinates(slot);
-
             PieceSlot above = null, right = null, below = null, left = null;
 
             if (y != 0) above = _slots[x, y - 1];
@@ -97,20 +95,7 @@ namespace FishSolver.Core.Domain
 
         public FishGrid Clone() => new FishGrid(_slots);
 
-        private (int x, int y) GetCoordinates(PieceSlot slot)
-        {
-            for (var x = 0; x < _slots.GetLength(0); ++x)
-            for (var y = 0; y < _slots.GetLength(1); ++y)
-            {
-                if (ReferenceEquals(_slots[x, y], slot))
-                {
-                    return (x, y);
-                }
-            }
-
-            throw new ArgumentException("Slot doesn't exist in grid",
-                                        nameof(slot));
-        }
+        private IEnumerable<PieceSlot> AllSlots => AllCoordinates.Select(GetSlot);
 
         private readonly PieceSlot[,] _slots;
     }

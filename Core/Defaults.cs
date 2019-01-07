@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
 using FishSolver.Core.Domain;
-using FishSolver.Core.Domain.FishTypes;
 
 using C = FishSolver.Core.Domain.FishTypes.CenterFishType;
 using V = FishSolver.Core.Domain.FishTypes.VerticalFishType;
